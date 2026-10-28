@@ -8,7 +8,7 @@
     "target": "esnext",
     "moduleResolution": "Bundler",
     "lib": ["esnext"],
-    "types": ["node"],
+    "types": ["node", "jest"],
 
     // Other Outputs
     "sourceMap": true,
@@ -34,6 +34,8 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "esModuleInterop": true
   }
 }
