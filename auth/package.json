@@ -19,6 +19,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@bohdktickets/common": "^1.0.4",
     "body-parser": "^2.4.0",
     "cookie-session": "^2.1.1",
     "express": "^4.22.3",
