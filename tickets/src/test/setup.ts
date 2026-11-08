@@ -1,7 +1,22 @@
+import { jest } from '@jest/globals';
 import os from 'node:os';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+
+jest.unstable_mockModule('../nats-wrapper', () => ({
+  natsWrapper: {
+    client: {
+      publish: jest
+        .fn()
+        .mockImplementation(
+          (subject: string, data: string, callback: () => void) => {
+            callback();
+          },
+        ),
+    },
+  },
+}));
 
 declare global {
   var signin: () => string[];
@@ -23,6 +38,7 @@ beforeAll(async () => {
 }, 30000);
 
 beforeEach(async () => {
+  jest.clearAllMocks();
   if (mongoose.connection.db) {
     const collections = await mongoose.connection.db.collections();
 
