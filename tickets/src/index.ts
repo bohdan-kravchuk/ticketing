@@ -2,6 +2,23 @@ import mongoose from 'mongoose';
 import { app } from './app';
 import { natsWrapper } from './nats-wrapper';
 
+const connectWithRetry = async (): Promise<void> => {
+  while (true) {
+    try {
+      await natsWrapper.connect(
+        process.env.NATS_CLUSTER_ID!,
+        process.env.NATS_CLIENT_ID!,
+        process.env.NATS_URL!,
+      );
+      return;
+    } catch (err) {
+      console.error('NATS connection failed. Retrying in 2 seconds...', err);
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+  }
+};
+
 const start = async () => {
   if (!process.env.JWT_KEY) {
     throw new Error('JWT_KEY must be defined');
@@ -20,11 +37,7 @@ const start = async () => {
   }
 
   try {
-    await natsWrapper.connect(
-      process.env.NATS_CLUSTER_ID,
-      process.env.NATS_CLIENT_ID,
-      process.env.NATS_URL,
-    );
+    await connectWithRetry();
     natsWrapper.client.on('close', () => {
       console.log('NATS connection closed!');
       process.exit();

@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { Ticket } from '../../models/ticket';
 import { Order } from '../../models/order';
 import { OrderStatus } from '@bohdktickets/common';
+import { natsWrapper } from '../../nats-wrapper';
 
 it('returns an error if the ticket does not exist', async () => {
   const ticketId = new mongoose.Types.ObjectId();
@@ -50,7 +51,21 @@ it('reserves a ticket', async () => {
     .expect(201);
 
   const orders = await Order.find();
-  expect(orders.length).toEqual(1)
+  expect(orders.length).toEqual(1);
 });
 
-it.todo('emits an order created event')
+it('emits an order created event', async () => {
+  const ticket = Ticket.build({
+    price: 40,
+    title: 'concert',
+  });
+  await ticket.save();
+
+  await request(app)
+    .post('/api/orders')
+    .set('Cookie', globalThis.signin())
+    .send({ ticketId: ticket.id })
+    .expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
