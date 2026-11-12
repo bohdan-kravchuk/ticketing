@@ -4,9 +4,11 @@ import { app } from '../../app';
 import { OrderStatus } from '@bohdktickets/common';
 import { Order } from '../../models/order';
 import { natsWrapper } from '../../nats-wrapper';
+import mongoose from 'mongoose';
 
 const buildTicket = async () => {
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     price: 20,
     title: 'concert',
   });
