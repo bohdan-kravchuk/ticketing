@@ -18,10 +18,21 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
       throw new Error('Ticket not found');
     }
 
-    const { title, price } = data;
-    ticket.set({ title, price });
-    ticket.increment();
-    await ticket.save();
+    const result = await Ticket.updateOne(
+      { _id: data.id, version: data.version - 1 },
+      {
+        $set: {
+          title: data.title,
+          price: data.price,
+          version: data.version,
+        },
+      },
+      { runValidators: true },
+    );
+
+    if (result.matchedCount !== 1) {
+      throw new Error('Ticket not found or version mismatch');
+    }
 
     msg.ack();
   }
