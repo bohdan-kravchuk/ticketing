@@ -1,4 +1,7 @@
-import { OrderStatus, type ExpirationComplate } from '@bohdktickets/common';
+import {
+  OrderStatus,
+  type ExpirationComplateEvent,
+} from '@bohdktickets/common';
 import { natsWrapper } from '../../../nats-wrapper';
 import { ExpirationComleteListener } from '../expiration-complete-listener';
 import mongoose from 'mongoose';
@@ -23,7 +26,7 @@ const setup = async () => {
   });
   await order.save();
 
-  const data: ExpirationComplate['data'] = {
+  const data: ExpirationComplateEvent['data'] = {
     orderId: order.id,
   };
   // @ts-ignore

@@ -2,25 +2,28 @@ import {
   Listener,
   OrderStatus,
   Subjects,
-  type ExpirationComplate,
+  type ExpirationComplateEvent,
 } from '@bohdktickets/common';
 import { queueGroupName } from './queue-group-name';
 import type { Message } from 'node-nats-streaming';
 import { Order } from '../../models/order';
 import { OrderCancelledPublisher } from '../publishers/order-cancelled-publisher';
 
-export class ExpirationComleteListener extends Listener<ExpirationComplate> {
+export class ExpirationComleteListener extends Listener<ExpirationComplateEvent> {
   subject: Subjects.ExpirationComplete = Subjects.ExpirationComplete;
   queueGroupName = queueGroupName;
 
   async onMessage(
-    data: ExpirationComplate['data'],
+    data: ExpirationComplateEvent['data'],
     msg: Message,
   ): Promise<void> {
     const order = await Order.findById(data.orderId).populate('ticket');
 
     if (!order) {
       throw new Error('Order not found');
+    }
+    if (order.status === OrderStatus.Complete) {
+      return msg.ack();
     }
 
     order.set({

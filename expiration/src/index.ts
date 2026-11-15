@@ -11,7 +11,7 @@ const connectWithRetry = async (): Promise<void> => {
       );
       return;
     } catch (err) {
-      console.error('NATS connection failed. Retrying in 2 seconds...', err);
+      console.error('NATS connection failed. Retrying in 2 seconds...');
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }

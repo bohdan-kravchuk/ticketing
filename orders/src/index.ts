@@ -4,6 +4,7 @@ import { natsWrapper } from './nats-wrapper';
 import { TicketCreatedListener } from './events/listeners/ticket-created-listener';
 import { TicketUpdatedListener } from './events/listeners/ticket-updated-listener';
 import { ExpirationComleteListener } from './events/listeners/expiration-complete-listener';
+import { PaymentCreatedListener } from './events/listeners/payment-created-listener';
 
 const connectWithRetry = async (): Promise<void> => {
   while (true) {
@@ -15,7 +16,7 @@ const connectWithRetry = async (): Promise<void> => {
       );
       return;
     } catch (err) {
-      console.error('NATS connection failed. Retrying in 2 seconds...', err);
+      console.error('NATS connection failed. Retrying in 2 seconds...');
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
@@ -51,6 +52,7 @@ const start = async () => {
     new TicketCreatedListener(natsWrapper.client).listen();
     new TicketUpdatedListener(natsWrapper.client).listen();
     new ExpirationComleteListener(natsWrapper.client).listen();
+    new PaymentCreatedListener(natsWrapper.client).listen();
 
     await mongoose.connect(process.env.MONGO_URI);
     console.log('Connected to MongoDB');
