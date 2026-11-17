@@ -5,15 +5,26 @@
   "main": "index.js",
   "scripts": {
     "start": "tsx watch src/index.ts",
-    "test": "jest --watchAll --no-cache",
-    "test:ci": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll --no-cache",
+    "test:ci": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "jest": {
-    "preset": "ts-jest",
+    "preset": "ts-jest/presets/default-esm",
     "testEnvironment": "node",
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
     "setupFilesAfterEnv": [
       "./src/test/setup.ts"
-    ]
+    ],
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
+    }
   },
   "keywords": [],
   "author": "",
